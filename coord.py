@@ -1,6 +1,6 @@
 from tensorflow.keras.layers import Layer, InputSpec
 from tensorflow.keras import backend as K
-from tensorflow.keras.utils.generic_utils import get_custom_objects
+from tensorflow.keras.utils import get_custom_objects
 
 
 class _CoordinateChannel(Layer):

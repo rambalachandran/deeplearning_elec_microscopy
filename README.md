@@ -4,4 +4,6 @@ Coordinate convolution <br />
 Bilinear with Coordinate Convolution without Transfer Learing<br />
 Bilinear with Coordinate Convolution with Trannsfer Learning <br />
 
+Google Colab Test
+
 

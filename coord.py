@@ -1,11 +1,10 @@
-from tensorflow.keras.layers import Layer, InputSpec
+from tensorflow.python.keras.layers import Layer, InputSpec
 from tensorflow.keras import backend as K
 from tensorflow.keras.utils import get_custom_objects
 
 
 class _CoordinateChannel(Layer):
     """ Adds Coordinate Channels to the input tensor.
-
     # Arguments
         rank: An integer, the rank of the input data-uniform,
             e.g. "2" for 2D convolution.
@@ -21,7 +20,6 @@ class _CoordinateChannel(Layer):
             It defaults to the `image_data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
             If you never set it, then it will be "channels_last".
-
     # Input shape
         ND tensor with shape:
         `(samples, channels, *)`
@@ -29,7 +27,6 @@ class _CoordinateChannel(Layer):
         or ND tensor with shape:
         `(samples, *, channels)`
         if `data_format` is `"channels_last"`.
-
     # Output shape
         ND tensor with shape:
         `(samples, channels + 2, *)`
@@ -37,7 +34,6 @@ class _CoordinateChannel(Layer):
         or 5D tensor with shape:
         `(samples, *, channels + 2)`
         if `data_format` is `"channels_last"`.
-
     # References:
         - [An Intriguing Failing of Convolutional Neural Networks and the CoordConv Solution](https://arxiv.org/abs/1807.03247)
     """
@@ -224,7 +220,6 @@ class _CoordinateChannel(Layer):
 
 class CoordinateChannel1D(_CoordinateChannel):
     """ Adds Coordinate Channels to the input tensor of rank 1.
-
     # Arguments
         data_format: A string,
             one of `"channels_last"` or `"channels_first"`.
@@ -235,13 +230,10 @@ class CoordinateChannel1D(_CoordinateChannel):
             It defaults to the `image_data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
             If you never set it, then it will be "channels_last".
-
     # Input shape
         3D tensor with shape: `(batch_size, steps, input_dim)`
-
     # Output shape
         3D tensor with shape: `(batch_size, steps, input_dim + 2)`
-
     # References:
         - [An Intriguing Failing of Convolutional Neural Networks and the CoordConv Solution](https://arxiv.org/abs/1807.03247)
     """
@@ -263,7 +255,6 @@ class CoordinateChannel1D(_CoordinateChannel):
 
 class CoordinateChannel2D(_CoordinateChannel):
     """ Adds Coordinate Channels to the input tensor.
-
     # Arguments
         use_radius: Boolean flag to determine whether the
             radius coordinate should be added for 2D rank
@@ -277,7 +268,6 @@ class CoordinateChannel2D(_CoordinateChannel):
             It defaults to the `image_data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
             If you never set it, then it will be "channels_last".
-
     # Input shape
         4D tensor with shape:
         `(samples, channels, rows, cols)`
@@ -285,7 +275,6 @@ class CoordinateChannel2D(_CoordinateChannel):
         or 4D tensor with shape:
         `(samples, rows, cols, channels)`
         if `data_format` is `"channels_last"`.
-
     # Output shape
         4D tensor with shape:
         `(samples, channels + 2/3, rows, cols)`
@@ -293,10 +282,8 @@ class CoordinateChannel2D(_CoordinateChannel):
         or 4D tensor with shape:
         `(samples, rows, cols, channels + 2/3)`
         if `data_format` is `"channels_last"`.
-
         If `use_radius` is set, then will have 3 additional filers,
         else only 2 additional filters will be added.
-
     # References:
         - [An Intriguing Failing of Convolutional Neural Networks and the CoordConv Solution](https://arxiv.org/abs/1807.03247)
     """
@@ -319,7 +306,6 @@ class CoordinateChannel2D(_CoordinateChannel):
 
 class CoordinateChannel3D(_CoordinateChannel):
     """ Adds Coordinate Channels to the input tensor.
-
     # Arguments
         rank: An integer, the rank of the input data-uniform,
             e.g. "2" for 2D convolution.
@@ -335,7 +321,6 @@ class CoordinateChannel3D(_CoordinateChannel):
             It defaults to the `image_data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
             If you never set it, then it will be "channels_last".
-
     # Input shape
         5D tensor with shape:
         `(samples, channels, conv_dim1, conv_dim2, conv_dim3)`
@@ -343,7 +328,6 @@ class CoordinateChannel3D(_CoordinateChannel):
         or 5D tensor with shape:
         `(samples, conv_dim1, conv_dim2, conv_dim3, channels)`
         if `data_format` is `"channels_last"`.
-
     # Output shape
         5D tensor with shape:
         `(samples, channels + 2, conv_dim1, conv_dim2, conv_dim3)`
@@ -351,7 +335,6 @@ class CoordinateChannel3D(_CoordinateChannel):
         or 5D tensor with shape:
         `(samples, conv_dim1, conv_dim2, conv_dim3, channels + 2)`
         if `data_format` is `"channels_last"`.
-
     # References:
         - [An Intriguing Failing of Convolutional Neural Networks and the CoordConv Solution](https://arxiv.org/abs/1807.03247)
     """

@@ -152,7 +152,7 @@ def save_image(directory, structure, atom_pos, index):
         x1, y1 = atom_pos[ind, 0], atom_pos[ind, 1]
         x_img = int(x1/max_x * (image_atoms.shape[0]-1))
         y_img = int(y1/max_y * (image_atoms.shape[1]-1))
-	try:
+        try:
         	if x_img>0 and y_img>0:
            		image_atoms[x_img, y_img] = 1E6
     	except:
@@ -278,9 +278,9 @@ def generate_test_data(data_size):
 
 def generate_data(data_size):
     
-    generate_train_data(data_size*0.6)
-    generate_val_data(data_size*0.2)
-    generate_test_data(data_size*0.2)
+    generate_train_data(data_size*0.8)
+    generate_val_data(data_size*0.1)
+    generate_test_data(data_size*0.1)
 
 if __name__ == '__main__':
     #print(parameters)

@@ -8,7 +8,7 @@ from coord import CoordinateChannel2D
 
 class CordConv:
 	def __init__(self,learning_rate,dropout,kernel_size):
-		self.learning_rate = learning_rate
+	  self.learning_rate = learning_rate
 		self.dropout = dropout
 		self.kernel_size = kernel_size
 

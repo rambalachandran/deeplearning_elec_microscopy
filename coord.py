@@ -1,6 +1,7 @@
 from tensorflow.python.keras.layers import Layer, InputSpec
 from tensorflow.keras import backend as K
 from tensorflow.keras.utils import get_custom_objects
+import tensorflow as tf 
 
 
 class _CoordinateChannel(Layer):
@@ -17,7 +18,7 @@ class _CoordinateChannel(Layer):
             `"channels_last"` corresponds to inputs with shape
             `(batch, ..., channels)` while `"channels_first"` corresponds to
             inputs with shape `(batch, channels, ...)`.
-            It defaults to the `image_data_format` value found in your
+            It defaults to the `data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
             If you never set it, then it will be "channels_last".
     # Input shape
@@ -65,18 +66,18 @@ class _CoordinateChannel(Layer):
         self.built = True
 
     def call(self, inputs, training=None, mask=None):
-        input_shape = K.shape(inputs)
+        input_shape = tf.shape(inputs)
 
         if self.rank == 1:
             input_shape = [input_shape[i] for i in range(3)]
             batch_shape, dim, channels = input_shape
 
-            xx_range = K.tile(K.expand_dims(K.arange(0, dim), axis=0),
-                              K.stack([batch_shape, 1]))
-            xx_range = K.expand_dims(xx_range, axis=-1)
+            xx_range = tf.tile(tf.expand_dims(K.arange(0, dim), axis=0),
+                              tf.stack([batch_shape, 1]))
+            xx_range = tf.expand_dims(xx_range, axis=-1)
 
-            xx_channels = K.cast(xx_range, K.floatx())
-            xx_channels = xx_channels / K.cast(dim - 1, K.floatx())
+            xx_channels = tf.cast(xx_range, K.floatx())
+            xx_channels = xx_channels / tf.cast(dim - 1, K.floatx())
             xx_channels = (xx_channels * 2) - 1.
 
             outputs = K.concatenate([inputs, xx_channels], axis=-1)
@@ -84,45 +85,45 @@ class _CoordinateChannel(Layer):
         if self.rank == 2:
             if self.data_format == 'channels_first':
                 inputs = K.permute_dimensions(inputs, [0, 2, 3, 1])
-                input_shape = K.shape(inputs)
+                input_shape = tf.shape(inputs)
 
             input_shape = [input_shape[i] for i in range(4)]
             batch_shape, dim1, dim2, channels = input_shape
 
-            xx_ones = K.ones(K.stack([batch_shape, dim2]), dtype='int32')
-            xx_ones = K.expand_dims(xx_ones, axis=-1)
+            xx_ones = tf.ones(tf.stack([batch_shape, dim2]), dtype='int32')
+            xx_ones = tf.expand_dims(xx_ones, axis=-1)
 
-            xx_range = K.tile(K.expand_dims(K.arange(0, dim1), axis=0),
-                              K.stack([batch_shape, 1]))
-            xx_range = K.expand_dims(xx_range, axis=1)
+            xx_range = tf.tile(tf.expand_dims(K.arange(0, dim1), axis=0),
+                              tf.stack([batch_shape, 1]))
+            xx_range = tf.expand_dims(xx_range, axis=1)
             xx_channels = K.batch_dot(xx_ones, xx_range, axes=[2, 1])
-            xx_channels = K.expand_dims(xx_channels, axis=-1)
+            xx_channels = tf.expand_dims(xx_channels, axis=-1)
             xx_channels = K.permute_dimensions(xx_channels, [0, 2, 1, 3])
 
-            yy_ones = K.ones(K.stack([batch_shape, dim1]), dtype='int32')
-            yy_ones = K.expand_dims(yy_ones, axis=1)
+            yy_ones = tf.ones(tf.stack([batch_shape, dim1]), dtype='int32')
+            yy_ones = tf.expand_dims(yy_ones, axis=1)
 
-            yy_range = K.tile(K.expand_dims(K.arange(0, dim2), axis=0),
-                              K.stack([batch_shape, 1]))
-            yy_range = K.expand_dims(yy_range, axis=-1)
+            yy_range = tf.tile(tf.expand_dims(K.arange(0, dim2), axis=0),
+                              tf.stack([batch_shape, 1]))
+            yy_range = tf.expand_dims(yy_range, axis=-1)
 
             yy_channels = K.batch_dot(yy_range, yy_ones, axes=[2, 1])
-            yy_channels = K.expand_dims(yy_channels, axis=-1)
+            yy_channels = tf.expand_dims(yy_channels, axis=-1)
             yy_channels = K.permute_dimensions(yy_channels, [0, 2, 1, 3])
 
-            xx_channels = K.cast(xx_channels, K.floatx())
-            xx_channels = xx_channels / K.cast(dim1 - 1, K.floatx())
+            xx_channels = tf.cast(xx_channels, K.floatx())
+            xx_channels = xx_channels / tf.cast(dim1 - 1, K.floatx())
             xx_channels = (xx_channels * 2) - 1.
 
-            yy_channels = K.cast(yy_channels, K.floatx())
-            yy_channels = yy_channels / K.cast(dim2 - 1, K.floatx())
+            yy_channels = tf.cast(yy_channels, K.floatx())
+            yy_channels = yy_channels / tf.cast(dim2 - 1, K.floatx())
             yy_channels = (yy_channels * 2) - 1.
 
             outputs = K.concatenate([inputs, xx_channels, yy_channels], axis=-1)
 
             if self.use_radius:
-                rr = K.sqrt(K.square(xx_channels - 0.5) +
-                            K.square(yy_channels - 0.5))
+                rr = tf.sqrt(tf.square(xx_channels - 0.5) +
+                            tf.square(yy_channels - 0.5))
                 outputs = K.concatenate([outputs, rr], axis=-1)
 
             if self.data_format == 'channels_first':
@@ -131,60 +132,60 @@ class _CoordinateChannel(Layer):
         if self.rank == 3:
             if self.data_format == 'channels_first':
                 inputs = K.permute_dimensions(inputs, [0, 2, 3, 4, 1])
-                input_shape = K.shape(inputs)
+                input_shape = tf.shape(inputs)
 
             input_shape = [input_shape[i] for i in range(5)]
             batch_shape, dim1, dim2, dim3, channels = input_shape
 
-            xx_ones = K.ones(K.stack([batch_shape, dim3]), dtype='int32')
-            xx_ones = K.expand_dims(xx_ones, axis=-1)
+            xx_ones = tf.ones(tf.stack([batch_shape, dim3]), dtype='int32')
+            xx_ones = tf.expand_dims(xx_ones, axis=-1)
 
-            xx_range = K.tile(K.expand_dims(K.arange(0, dim2), axis=0),
-                              K.stack([batch_shape, 1]))
-            xx_range = K.expand_dims(xx_range, axis=1)
+            xx_range = tf.tile(tf.expand_dims(K.arange(0, dim2), axis=0),
+                              tf.stack([batch_shape, 1]))
+            xx_range = tf.expand_dims(xx_range, axis=1)
 
             xx_channels = K.batch_dot(xx_ones, xx_range, axes=[2, 1])
-            xx_channels = K.expand_dims(xx_channels, axis=-1)
+            xx_channels = tf.expand_dims(xx_channels, axis=-1)
             xx_channels = K.permute_dimensions(xx_channels, [0, 2, 1, 3])
 
-            xx_channels = K.expand_dims(xx_channels, axis=1)
-            xx_channels = K.tile(xx_channels,
+            xx_channels = tf.expand_dims(xx_channels, axis=1)
+            xx_channels = tf.tile(xx_channels,
                                  [1, dim1, 1, 1, 1])
 
-            yy_ones = K.ones(K.stack([batch_shape, dim2]), dtype='int32')
-            yy_ones = K.expand_dims(yy_ones, axis=1)
+            yy_ones = tf.ones(tf.stack([batch_shape, dim2]), dtype='int32')
+            yy_ones = tf.expand_dims(yy_ones, axis=1)
 
-            yy_range = K.tile(K.expand_dims(K.arange(0, dim3), axis=0),
-                              K.stack([batch_shape, 1]))
-            yy_range = K.expand_dims(yy_range, axis=-1)
+            yy_range = tf.tile(tf.expand_dims(K.arange(0, dim3), axis=0),
+                              tf.stack([batch_shape, 1]))
+            yy_range = tf.expand_dims(yy_range, axis=-1)
 
             yy_channels = K.batch_dot(yy_range, yy_ones, axes=[2, 1])
-            yy_channels = K.expand_dims(yy_channels, axis=-1)
+            yy_channels = tf.expand_dims(yy_channels, axis=-1)
             yy_channels = K.permute_dimensions(yy_channels, [0, 2, 1, 3])
 
-            yy_channels = K.expand_dims(yy_channels, axis=1)
-            yy_channels = K.tile(yy_channels,
+            yy_channels = tf.expand_dims(yy_channels, axis=1)
+            yy_channels = tf.tile(yy_channels,
                                  [1, dim1, 1, 1, 1])
 
-            zz_range = K.tile(K.expand_dims(K.arange(0, dim1), axis=0),
-                              K.stack([batch_shape, 1]))
-            zz_range = K.expand_dims(zz_range, axis=-1)
-            zz_range = K.expand_dims(zz_range, axis=-1)
+            zz_range = tf.tile(tf.expand_dims(K.arange(0, dim1), axis=0),
+                              tf.stack([batch_shape, 1]))
+            zz_range = tf.expand_dims(zz_range, axis=-1)
+            zz_range = tf.expand_dims(zz_range, axis=-1)
 
-            zz_channels = K.tile(zz_range,
+            zz_channels = tf.tile(zz_range,
                                  [1, 1, dim2, dim3])
-            zz_channels = K.expand_dims(zz_channels, axis=-1)
+            zz_channels = tf.expand_dims(zz_channels, axis=-1)
 
-            xx_channels = K.cast(xx_channels, K.floatx())
-            xx_channels = xx_channels / K.cast(dim2 - 1, K.floatx())
+            xx_channels = tf.cast(xx_channels, K.floatx())
+            xx_channels = xx_channels / tf.cast(dim2 - 1, K.floatx())
             xx_channels = xx_channels * 2 - 1.
 
-            yy_channels = K.cast(yy_channels, K.floatx())
-            yy_channels = yy_channels / K.cast(dim3 - 1, K.floatx())
+            yy_channels = tf.cast(yy_channels, K.floatx())
+            yy_channels = yy_channels / tf.cast(dim3 - 1, K.floatx())
             yy_channels = yy_channels * 2 - 1.
 
-            zz_channels = K.cast(zz_channels, K.floatx())
-            zz_channels = zz_channels / K.cast(dim1 - 1, K.floatx())
+            zz_channels = tf.cast(zz_channels, K.floatx())
+            zz_channels = zz_channels / tf.cast(dim1 - 1, K.floatx())
             zz_channels = zz_channels * 2 - 1.
 
             outputs = K.concatenate([inputs, zz_channels, xx_channels, yy_channels],
@@ -227,7 +228,7 @@ class CoordinateChannel1D(_CoordinateChannel):
             `"channels_last"` corresponds to inputs with shape
             `(batch, ..., channels)` while `"channels_first"` corresponds to
             inputs with shape `(batch, channels, ...)`.
-            It defaults to the `image_data_format` value found in your
+            It defaults to the `data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
             If you never set it, then it will be "channels_last".
     # Input shape
@@ -265,7 +266,7 @@ class CoordinateChannel2D(_CoordinateChannel):
             `"channels_last"` corresponds to inputs with shape
             `(batch, ..., channels)` while `"channels_first"` corresponds to
             inputs with shape `(batch, channels, ...)`.
-            It defaults to the `image_data_format` value found in your
+            It defaults to the `data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
             If you never set it, then it will be "channels_last".
     # Input shape
@@ -318,7 +319,7 @@ class CoordinateChannel3D(_CoordinateChannel):
             `"channels_last"` corresponds to inputs with shape
             `(batch, ..., channels)` while `"channels_first"` corresponds to
             inputs with shape `(batch, channels, ...)`.
-            It defaults to the `image_data_format` value found in your
+            It defaults to the `data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
             If you never set it, then it will be "channels_last".
     # Input shape

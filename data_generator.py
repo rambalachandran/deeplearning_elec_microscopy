@@ -153,10 +153,10 @@ def save_image(directory, structure, atom_pos, index):
         x_img = int(x1/max_x * (image_atoms.shape[0]-1))
         y_img = int(y1/max_y * (image_atoms.shape[1]-1))
         try:
-        	if x_img>0 and y_img>0:
+            if x_img>0 and y_img>0:
            		image_atoms[x_img, y_img] = 1E6
-    	except:
-		pass
+        except:
+            pass
     n = image_atoms.shape[0]
     h = 256
 
